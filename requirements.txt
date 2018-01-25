@@ -1,0 +1,7 @@
+Flask==0.12.2
+uwsgi==2.0.15
+click==6.7
+flask-sockets==0.2.1
+requests==2.18.4
+
+pytest==3.3.2

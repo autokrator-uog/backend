@@ -1,0 +1,7 @@
+version: '2'
+
+services:
+  bfaf:
+    build: .
+    ports:
+      - 5001:5000
