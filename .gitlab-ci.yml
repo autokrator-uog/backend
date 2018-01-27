@@ -1,0 +1,37 @@
+variables:
+  REGISTRY: sed-team-project:4567
+  REGISTRY_BFAF: sed-team-project:4567/sed-dev-group/bfaf
+  BFAF_TAG_THIS_BUILD: $REGISTRY_BFAF:$CI_COMMIT_REF_NAME
+  BFAF_TAG_LATEST: $REGISTRY_BFAF:latest
+
+stages:
+  - test
+  - build
+  - publish
+
+test:
+  stage: test
+  image: python:3.6
+  scipt:
+    - pip install -r requirements.txt
+    - python bfaf.py test
+
+build:
+  stage: build
+  image: docker:latest
+  script:
+    - docker build -t $BFAF_TAG_THIS_BUILD .
+    - echo "$CI_BUILD_TOKEN" | docker login -u gitlab-ci-token --password-stdin $REGISTRY
+    - docker push $BFAF_TAG_THIS_BUILD
+
+prod_tag:
+  image: docker:latest
+  stage: publish
+  script:
+    - echo "$CI_BUILD_TOKEN" | docker login -u gitlab-ci-token --password-stdin $REGISTRY
+
+    - docker pull $BFAF_TAG_THIS_BUILD
+    - docker tag $BFAF_TAG_THIS_BUILD $BFAF_TAG_LATEST
+    - docker push $BFAF_TAG_LATEST
+  only:
+    - master
