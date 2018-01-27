@@ -11,15 +11,15 @@ logger = logging.getLogger(__name__)
 
 
 def bootstrap():
+    # setup logging
+    coloredlogs.install(level=logging.DEBUG)
+
     logger.info("Bootstrapping app...")
 
     app = Flask(__name__)
 
     logger.info("Loading config...")
     app.config.from_object('config.default')
-
-    # setup logging
-    coloredlogs.install(level=logging.DEBUG)
 
     sockets = Sockets(app)
 
@@ -36,13 +36,19 @@ def bootstrap():
     sockets.register_blueprint(updates_blueprint, url_prefix='/updates')
 
     # set up background threads
+    logger.info("Setting up poller thread...")
     from endpoints.websockets.poller import NewInfoPollerThread
     app.poller_thread = NewInfoPollerThread(app)
     app.poller_thread.start()
 
     @atexit.register
     def close_poller_thread():
+        logger.warning("Exiting... cleaning up poller thread.")
         app.poller_thread.exit = True
+        app.poller_thread.join(timeout=3000)
+        logger.info("Poller thread cleaned up.")
+
+    app.close_poller_thread = close_poller_thread
 
     return app
 
@@ -57,16 +63,34 @@ def entrypoint(context):
 
 
 @entrypoint.command()
+@click.option('--port', default=5000, type=click.IntRange(0, 65535))
 @click.pass_context
-def run(context):
-    print("Running local dev server.")
+def run(context, port):
+    logger.warning("Running local dev server on port %d", port)
+
     app = context.obj['app']
 
     app.config['DEBUG'] = True
 
     from gevent import pywsgi
     from geventwebsocket.handler import WebSocketHandler
-    server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
+
+    import signal
+
+    server = pywsgi.WSGIServer(('', port), app, handler_class=WebSocketHandler)
+
+    def stop(sig, frame):
+        logger.warning("SIGINT received: stopping server")
+
+        if server.started:
+            server.stop()
+
+        app.close_poller_thread()
+
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, stop)
+
     server.serve_forever()
 
 
