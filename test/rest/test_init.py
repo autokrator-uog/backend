@@ -9,13 +9,13 @@ from services.userservice.exception import UserNotFoundException
 class TestInit(object):
     @pytest.fixture()
     def patch_user_service_client(self):
-        p = patch("rest.init.UserServiceClient")
+        p = patch("endpoints.rest.init.UserServiceClient")
         yield p.start().return_value
         p.stop()
 
     @pytest.fixture()
     def patch_accounts_service_client(self):
-        p = patch("rest.init.AccountsServiceClient")
+        p = patch("endpoints.rest.init.AccountsServiceClient")
         yield p.start().return_value
         p.stop()
 

@@ -35,20 +35,23 @@ def bootstrap():
     from endpoints.websockets.updates import updates_blueprint
     sockets.register_blueprint(updates_blueprint, url_prefix='/updates')
 
-    # set up background threads
-    logger.info("Setting up poller thread...")
-    from endpoints.websockets.poller import NewInfoPollerThread
-    app.poller_thread = NewInfoPollerThread(app)
-    app.poller_thread.start()
+    # set up background thread
+    @app.before_first_request
+    def set_up_poller_thread():
+        logger.info("Setting up poller thread...")
 
-    @atexit.register
-    def close_poller_thread():
-        logger.warning("Exiting... cleaning up poller thread.")
-        app.poller_thread.exit = True
-        app.poller_thread.join(timeout=3000)
-        logger.info("Poller thread cleaned up.")
+        from endpoints.websockets.poller import NewInfoPollerThread
+        app.poller_thread = NewInfoPollerThread(app)
+        app.poller_thread.start()
 
-    app.close_poller_thread = close_poller_thread
+        @atexit.register
+        def close_poller_thread():
+            logger.warning("Exiting... cleaning up poller thread.")
+            app.poller_thread.exit = True
+            app.poller_thread.join(timeout=3000)
+            logger.info("Poller thread cleaned up.")
+
+        app.close_poller_thread = close_poller_thread
 
     return app
 
@@ -69,12 +72,10 @@ def run(context, port):
     logger.warning("Running local dev server on port %d", port)
 
     app = context.obj['app']
-
     app.config['DEBUG'] = True
 
     from gevent import pywsgi
     from geventwebsocket.handler import WebSocketHandler
-
     import signal
 
     server = pywsgi.WSGIServer(('', port), app, handler_class=WebSocketHandler)
