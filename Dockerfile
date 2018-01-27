@@ -7,4 +7,7 @@ WORKDIR /app
 
 COPY . .
 
-CMD uwsgi -s /tmp/bfaf.sock --manage-script-name --mount /=bfaf:app --enable-threads
+ARG PORT
+ENV PORT ${PORT:-5000}
+
+CMD gunicorn -k flask_sockets.worker -w 1 -b 0.0.0.0:$PORT bfaf:gunicorn_app

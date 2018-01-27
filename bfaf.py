@@ -1,6 +1,9 @@
 import logging
+import atexit
+import sys
 
 import click
+import coloredlogs
 from flask import Flask
 from flask_sockets import Sockets
 
@@ -11,6 +14,13 @@ def bootstrap():
     logger.info("Bootstrapping app...")
 
     app = Flask(__name__)
+
+    logger.info("Loading config...")
+    app.config.from_object('config.default')
+
+    # setup logging
+    coloredlogs.install(level=logging.DEBUG)
+
     sockets = Sockets(app)
 
     @app.route('/')
@@ -18,22 +28,32 @@ def bootstrap():
         return 'This is BFAF'
 
     # register HTTP blueprints
-    from rest.init import init_blueprint
+    from endpoints.rest.init import init_blueprint
     app.register_blueprint(init_blueprint, url_prefix='/init')
 
     # register WebSockets blueprints
-    # asdf
+    from endpoints.websockets.updates import updates_blueprint
+    sockets.register_blueprint(updates_blueprint, url_prefix='/updates')
 
-    logger.info("Loading config...")
-    app.config.from_object('config.default')
+    # set up background threads
+    from endpoints.websockets.poller import NewInfoPollerThread
+    app.poller_thread = NewInfoPollerThread(app)
+    app.poller_thread.start()
+
+    @atexit.register
+    def close_poller_thread():
+        app.poller_thread.exit = True
 
     return app
+
+
+gunicorn_app = bootstrap()
 
 
 @click.group()
 @click.pass_context
 def entrypoint(context):
-    context.obj['app'] = bootstrap()
+    context.obj['app'] = gunicorn_app
 
 
 @entrypoint.command()
@@ -43,7 +63,11 @@ def run(context):
     app = context.obj['app']
 
     app.config['DEBUG'] = True
-    app.run()
+
+    from gevent import pywsgi
+    from geventwebsocket.handler import WebSocketHandler
+    server = pywsgi.WSGIServer(('', 5000), app, handler_class=WebSocketHandler)
+    server.serve_forever()
 
 
 @entrypoint.command()
