@@ -3,6 +3,6 @@ DEBUG = False
 
 LOGGER_HANDLER_POLICY = 'never'
 
-USER_SERVICE_URL = "localhost:5002"
 ACCOUNTS_SERVICE_URL = "localhost:5003"
 TRANSACTION_SERVICE_URL = "localhost:5004"
+USER_SERVICE_URL = "localhost:5005"
