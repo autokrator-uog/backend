@@ -5,6 +5,7 @@ import sys
 import click
 import coloredlogs
 from flask import Flask
+from flask_cors import CORS
 from flask_sockets import Sockets
 
 logger = logging.getLogger(__name__)
@@ -17,6 +18,7 @@ def bootstrap():
     logger.info("Bootstrapping app...")
 
     app = Flask(__name__)
+    cors = CORS(app, resources={"*": {"origins": "*"}}) # enable cross-origin resource sharing
 
     logger.info("Loading config...")
     app.config.from_object('config.default')

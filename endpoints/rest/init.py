@@ -19,7 +19,7 @@ def service_error(error):
     }), 500
 
 
-@init_blueprint.route('/')
+@init_blueprint.route('')
 def get_initial_details():
     user_name = request.args.get("user_name")
 
