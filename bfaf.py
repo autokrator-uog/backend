@@ -4,9 +4,11 @@ import sys
 
 import click
 import coloredlogs
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_sockets import Sockets
+
+from services.exceptions import ServiceException
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +30,12 @@ def bootstrap():
     @app.route('/')
     def hello_world():
         return 'This is BFAF'
+
+    @app.errorhandler(ServiceException)
+    def service_error(error):
+        return jsonify({
+            "message": "Error from a dependent service: {}".format(str(error))
+        }), 500
 
     # register HTTP blueprints
     from endpoints.rest.init import init_blueprint

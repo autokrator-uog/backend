@@ -2,7 +2,6 @@
 import logging
 from flask import Blueprint, request, current_app, jsonify
 
-from services.exceptions import ServiceException
 from services.userservice.client import UserServiceClient
 from services.accountsservice.client import AccountsServiceClient
 from services.accountsservice.exception import AccountsServiceException
@@ -10,13 +9,6 @@ from services.userservice.exception import UserNotFoundException
 
 logger = logging.getLogger(__name__)
 init_blueprint = Blueprint('init', __name__)
-
-
-@init_blueprint.errorhandler(ServiceException)
-def service_error(error):
-    return jsonify({
-        "message": "Error from a dependent service: {}".format(str(error))
-    }), 500
 
 
 @init_blueprint.route('')

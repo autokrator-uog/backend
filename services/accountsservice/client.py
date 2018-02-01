@@ -1,16 +1,8 @@
-import requests
-
 from services.accountsservice.exception import AccountsServiceException, AccountNotFoundException
+from services.baseclient import ServiceClient
 
 
-class AccountsServiceClient:
-    def __init__(self, url):
-        self.url = url
-
-        if not url.startswith('http'):
-            self.url = 'http://' + url
-
-        self._session = requests.Session()
+class AccountsServiceClient(ServiceClient):
 
     def get_account_details(self, account_id):
         response = self._session.get("{}/account/{}".format(self.url, account_id))

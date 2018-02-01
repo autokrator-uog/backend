@@ -1,16 +1,8 @@
-import requests
-
+from services.baseclient import ServiceClient
 from services.userservice.exception import UserServiceException, UserNotFoundException
 
 
-class UserServiceClient:
-    def __init__(self, url):
-        self.url = url
-
-        if not url.startswith('http'):
-            self.url = 'http://' + url
-
-        self._session = requests.Session()
+class UserServiceClient(ServiceClient):
 
     def get_accounts_for_user(self, user_name):
         response = self._session.get("{}/user/{}".format(self.url, user_name))
