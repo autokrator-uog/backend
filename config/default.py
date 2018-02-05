@@ -1,5 +1,5 @@
 
-DEBUG = False
+DEBUG = True
 
 LOGGER_HANDLER_POLICY = 'never'
 

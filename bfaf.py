@@ -1,6 +1,7 @@
 import logging
 import atexit
 import sys
+import os
 
 import click
 import coloredlogs
@@ -24,6 +25,9 @@ def bootstrap():
 
     logger.info("Loading config...")
     app.config.from_object('config.default')
+    
+    if os.environ.get("ENV", "").upper() == "PROD":
+        app.config.from_object('config.prod')
 
     sockets = Sockets(app)
 
