@@ -44,7 +44,8 @@ class NewInfoPollerThread(Thread):
                     socket = get_socket_for_account_id(account_id)
                     for entry in new_entries:
                         socket.send({
-                            "type": "new_statement_item",
+                            "update_type": "new_statement_item",
+                            "for_account_id": account_id,
                             "data": entry
                         })
                 else:
