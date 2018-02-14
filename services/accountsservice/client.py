@@ -18,7 +18,8 @@ class AccountsServiceClient(ServiceClient):
         response = self._session.get("{}/account/{}/statement".format(self.url, account_id))
 
         if response.status_code == 200:
-            return response.json()
+            resp = response.json()
+            return resp['statements']
         elif response.status_code == 404:
             raise AccountNotFoundException("Account {} not found!".format(account_id))
         else:

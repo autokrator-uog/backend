@@ -12,7 +12,7 @@ class TransactionServiceClient(ServiceClient):
             'amount': amount
         }
 
-        response = self._session.post("{}/transaction/send".format(self.url), json.dumps(payload))
+        response = self._session.post("{}/createTransaction".format(self.url), json.dumps(payload))
 
         if response.status_code != 200:
             raise TransactionServiceException("Error making transaction: {}".format(response.content))
