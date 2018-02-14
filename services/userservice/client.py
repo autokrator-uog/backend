@@ -20,7 +20,7 @@ class UserServiceClient(ServiceClient):
 
         if response.status_code == 200:
             json = response.json()
-            return json.get('username', []) # TODO change to accounts once the thingy is done
+            return json.get('accounts', [])
 
         elif response.status_code == 404:
             raise UserNotFoundException("User {} not found!".format(user_name))
