@@ -1,6 +1,7 @@
 from threading import Thread
 import time
 import logging
+import json
 
 from endpoints.websockets.updates import get_all_account_ids_to_update, get_socket_for_account_id
 from services.accountsservice.client import AccountsServiceClient
@@ -43,11 +44,12 @@ class NewInfoPollerThread(Thread):
 
                     socket = get_socket_for_account_id(account_id)
                     for entry in new_entries:
-                        socket.send({
+                        serialized = json.dumps({
                             "update_type": "new_statement_item",
                             "for_account_id": account_id,
                             "data": entry
                         })
+                        socket.send(serialized)
                 else:
                     logger.debug("No change in account {}".format(account_id))
 

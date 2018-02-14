@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from unittest.mock import patch
 
@@ -82,9 +84,10 @@ class TestPoller(object):
 
         assert patch_get_all_account_ids_to_update.called
         patch_accounts_service_client.get_account_statement.assert_called_with(1)
-        patch_get_socket_for_account_id.return_value.send.assert_called_with({
-            "type": "new_statement_item",
+        patch_get_socket_for_account_id.return_value.send.assert_called_with(json.dumps({
+            "update_type": "new_statement_item",
+            "for_account_id": 1,
             "data": {
                 "Amount": 1234
             }
-        })
+        }))
