@@ -26,4 +26,5 @@ class UserServiceClient(ServiceClient):
             raise UserNotFoundException("User {} not found!".format(user_name))
 
         else:
-            raise UserServiceException("Error: body='{}'".format(response.content))
+            raise UserServiceException("User Service Error: status={} body='{}'"
+                    .format(response.status_code, response.content))

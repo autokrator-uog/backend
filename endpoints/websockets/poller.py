@@ -57,5 +57,9 @@ class NewInfoPollerThread(Thread):
 
     def run(self):
         while not self.exit:
-            self.poll()
+            try:
+                self.poll()
+            except Exception as e:
+                logger.error(e)
+            
             time.sleep(1)

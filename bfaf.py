@@ -38,7 +38,8 @@ def bootstrap():
     @app.errorhandler(ServiceException)
     def service_error(error):
         return jsonify({
-            "message": "Error from a dependent service: {}".format(str(error))
+            "message": "Error from a dependent service: type={} {}"
+                .format(error.__class__.__name__, str(error))
         }), 500
 
     # register HTTP blueprints
