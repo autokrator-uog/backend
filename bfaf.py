@@ -45,6 +45,9 @@ def bootstrap():
     # register HTTP blueprints
     from endpoints.rest.init import init_blueprint
     app.register_blueprint(init_blueprint, url_prefix='/init')
+    
+    from endpoints.rest.transaction import transaction_blueprint
+    app.register_blueprint(transaction_blueprint, url_prefix='/transaction')
 
     # register WebSockets blueprints
     from endpoints.websockets.updates import updates_blueprint

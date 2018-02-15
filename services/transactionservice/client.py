@@ -1,7 +1,10 @@
 import json
+import logging
 
 from services.baseclient import ServiceClient
 from services.transactionservice.exception import TransactionServiceException
+
+logger = logging.getLogger(__name__)
 
 
 class TransactionServiceClient(ServiceClient):
@@ -11,8 +14,9 @@ class TransactionServiceClient(ServiceClient):
             'toAccountId': to_account_id,
             'amount': amount
         }
-
+        logger.debug("Sending /createTransaction request: {}".format(json.dumps(payload)))
+        
         response = self._session.post("{}/createTransaction".format(self.url), json.dumps(payload))
 
-        if response.status_code != 200:
+        if not response.ok:
             raise TransactionServiceException("Error making transaction: {}".format(response.content))

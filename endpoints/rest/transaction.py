@@ -12,11 +12,12 @@ transaction_blueprint = Blueprint('transaction', __name__)
 @transaction_blueprint.route('/send', methods=['POST'])
 def send_money():
     client = TransactionServiceClient(current_app.config.get("TRANSACTION_SERVICE_URL", "localhost"))
+    data = request.get_json()
 
     client.do_transaction_request(
-        request.form.get("from_account_id"),
-        request.form.get("to_account_id"),
-        request.form.get("account")
+        data.get("from_account_id"),
+        data.get("to_account_id"),
+        data.get("amount")
     )
 
     return jsonify({
