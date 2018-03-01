@@ -8,7 +8,6 @@ from services.accountsservice.client import AccountsServiceClient
 
 logger = logging.getLogger(__name__)
 transaction_blueprint = Blueprint('transaction', __name__)
-account_blueprint = Blueprint('accounts',__name__)
 
 
 @transaction_blueprint.route('/send', methods=['POST'])
@@ -27,7 +26,7 @@ def send_money():
     }), 200
 
 
-@account_blueprint.route('/deposit', methods=['POST'])
+@transaction_blueprint.route('/deposit', methods=['POST'])
 def deposit():
     client = AccountsServiceClient(current_app.config.get("ACCOUNT_SERVICE_URL", "localhost"))
     data = request.get_json()
@@ -42,7 +41,7 @@ def deposit():
     }), 200
 
 
-@account_blueprint.route('/withdrawal', methods=['POST'])
+@transaction_blueprint.route('/withdrawal', methods=['POST'])
 def withdrawal():
     client = AccountsServiceClient(current_app.config.get("ACCOUNT_SERVICE_URL", "localhost"))
     data = request.get_json()
