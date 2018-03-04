@@ -28,11 +28,11 @@ def send_money():
 
 @transaction_blueprint.route('/deposit', methods=['POST'])
 def deposit():
-    client = AccountsServiceClient(current_app.config.get("ACCOUNT_SERVICE_URL", "localhost"))
+    client = AccountsServiceClient(current_app.config.get("ACCOUNTS_SERVICE_URL", "localhost"))
     data = request.get_json()
 
     client.do_account_deposit(
-        data.get("to_account_id"),
+        data.get("toAccount"),
         data.get("amount")
     )
 
@@ -43,11 +43,11 @@ def deposit():
 
 @transaction_blueprint.route('/withdrawal', methods=['POST'])
 def withdrawal():
-    client = AccountsServiceClient(current_app.config.get("ACCOUNT_SERVICE_URL", "localhost"))
+    client = AccountsServiceClient(current_app.config.get("ACCOUNTS_SERVICE_URL", "localhost"))
     data = request.get_json()
 
     client.do_account_withdraw(
-        data.get("from_account_id"),
+        data.get("fromAccount"),
         data.get("amount")
     )
 
