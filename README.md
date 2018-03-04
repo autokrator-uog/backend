@@ -1,27 +1,19 @@
-# BFAF (Backend for a Frontend)
+# UI Backend (or Backend for a Frontend/BFAF)
+This repository contains a Flask application written in Python that acts as a middleman between the various microservices and the user interface.
 
-The BFAF handles communication between the React.js client and the microservices, acting as a gateway layer to the backend.
+## How to set up
+In order to set up the backend for running, follow these steps:
 
-## Set up
+  1. Install Python 3.x.
+  2. Make a virtual environment - `python3 -m venv venv`.
+  3. Activate the virtual environment - `source venv/bin/activate`.
+  4. Install dependencies using pip - `pip install -r requirements.txt`.
 
-Install python 3.6 -> make a virtual environment valled 'venv' `virtualenv venv`
+## How to run
+In order to run the backend, follow the set-up steps above and then run `python3 bfaf.py run`.
 
-Activate the venv ->  `source venv/bin/activate`
+## How to test
+In order to test the backend, follow the set-up steps above and then run `python bfaf.py test`.
 
-`pip install -r requirements.txt`
-
-
-## Run local dev server
-
-`python bfaf.py run`
-
-## Tests
-
-`python bfaf.py test`
-
-
-## Docker
-
-The Docker container is used for deploying in production.
-
-`docker-compose up` should allow you to build and run it.
+## Using Docker container
+This repository includes a docker container for deployment in production. You can use it by running `docker-compose up`.
